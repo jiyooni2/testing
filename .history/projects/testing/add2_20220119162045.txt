@@ -1,5 +1,0 @@
-<<<<<<< HEAD
-add msg 2
-=======
-edited in local
->>>>>>> 2c983f5 (Edited by Local)
