@@ -1,0 +1,406 @@
+Git
+    버전관리 도구(VCS, Version Control Version)
+    not Centralized Version Control, Distributed Version Control
+    server에서만 있는 것이 아니라, 모든 개발자들이 동일한 히스토리를 가지고 있음 
+    server : github, bitbucket, 회사 서버 등 사용
+    작업하고 있는 파일들을 원하는 순간으로 돌아갈 수 있게 해주는 도구
+    stream of snapshots
+        프로젝트의 전체적인 내용을 다 가지고 있음(스냅샷 하듯이)
+        이동이 굉장히 빠르고 오류가 적음
+        각각의 스냅샷은 별로 무겁지 않게, 바뀌지 않은 것은 링크로 이어줌
+
+git config
+    show git configuration
+    git config --global core.editor "code--wait"
+        동기적 실행(터미널 멈춤)
+    
+    git config --global core.autocrlf true(Win,cmd)/input(Mac,bash)
+        window는 text-editor에서, \r\n
+        window에서 github로 보낼때 text\n로 보내고
+        받을때, text \r\n으로 받아옴
+        다른 운영체제에서 줄바꿈 문자열이 달라져서 git history보는데 문제 있을 수 있음
+
+    git config --global alias.st status
+        st만 쳐도 status 명령어 쓸 수 있음
+
+git init
+    깃 초기화
+
+rm -rf .git
+    git 삭제
+
+Git concepts
+    1. Working Directory
+        1.1 : untracked(git not tracking)
+        1.2 : tracked(git tracking)
+            1.2.1 : unmodified
+                이전 버전과 비교해서 수정X
+            1.2.2 : modified(M)
+                수정된 파일만 staging area로 옮길 수 있음
+
+    2. Staging Area(A)
+        어느 정도 준비된 파일들
+
+    3. .git directory(local)
+        git version history에 저장
+        
+    4. git repository(server)
+
+    rm --cached : 2->1(untracked)
+    add : 1->2
+    commit : 2->3
+    checkout : 3->1
+    pull : 3->4
+    push : 4->3
+
+    각각의 commit에는 스냅샷된 정보 기반, 고유 해쉬코드 부여
+    버전 관련 메세지와 누가 작성했는지, 날짜 시간같은 정보들도 포함
+
+git status 
+    현재 파일들의 정보
+
+git add
+    git add a.txt
+    git add b.txt
+    git add a.txt b.txt
+    git add *.txt
+    git add * : 삭제 파일 staging area에 남아있음
+    git add . : 삭제 파일은 staging area에 없음
+
+git ignore
+    tracking 하고싶지 않은 파일들
+    .gitignore 파일에 그냥 적으면 됨
+    build/*.log, *.log 등등
+
+git status
+
+git diff
+    a : 이전 버전
+    b : 이후 버전
+    - : 이전 파일
+    + : 이후 파일
+    -1 +1,2 : 이전버전은 1 이후버전은 1,2 line
+    -삭제된 line    
+    +추가된 line
+
+    git diff --staged/--cached
+    git diff hash1 hash2
+
+git commit
+    Staging Area -> .git repository
+    git commit -m nth commit
+        간단한 메세지와 함께 commit
+
+git log
+    commit log
+
+commit Size
+    작은 단위로 나누어서 히스토리에 저장하는게 의미 있음
+    의미있는, 작은 기능별로 하는게 좋음
+    고친 내용이 있다면, 고친 내용만 하고 커밋해야함
+    커밋 메세지에 맞게 그 내용만 포함해서 커밋해야함!!!반드시
+    다른 내용 더 고치고 싶다면, 다른 이름의 커밋으로..
+
+세부적으로, 어떤 라인만 추가하고 싶을때는 UI툴 사용하는게 편함
+
+rm,mv -> git rm, git mv 사용하는 것 추천
+
+git history 볼 수 있는 것
+    git log
+    git log -p : 자세한 내용(변경 내용까지)
+    git log --oneline : 간단히
+    git log -3 : 3개만
+    git log --author="A" : author이 A인 것만
+    git log --before="날짜" : 날짜 이전 커밋만 보임
+    git log --grep="B" : commit title에 B포함된 것
+    git log -S "about" : 파일 안에 about들어 있는 것
+    git log HEAD[~1] : HEAD부터 볼 수 있음
+    git show hashcode : 해당 커밋 내용 볼 수 있음
+    git show hashcode:file_name : 그 commit의 file만 볼 수 있음
+
+
+commit
+    a커밋, b커밋, c커밋 하면
+    a <- b <- c <- master
+    head : 내가 바라보는 시점의 버전, head=c
+    head~1 : 이전 버전, head~1=b
+    head~2 : a
+
+    commit b로 돌아가고 싶다면, git checkout hashcode
+    head는 b로 바뀜
+    없어지는게 아님, git checkout master하면 원래대로 다시 돌아옴
+
+git log format
+    로그 이쁘게 볼 수 있음
+    git log --graph --all --pretty=format:'%C(yellow)[%ad]%C(reset) %C(green)[%h]%C(reset) | %C(white)%s %C(bold red){{%an}}%C(reset) %C(blue)%d%C(reset)' --date=short
+
+    git config --global alias.hist "log --graph --all --pretty=format:'%C(yellow)[%ad]%C(reset) %C(green)[%h]%C(reset) | %C(white)%s %C(bold red){{%an}}%C(reset) %C(blue)%d%C(reset)' --date=short"
+
+git tag
+    원하는 부분으로 빠르게 전환 가능(북마크 느낌)
+    버전으로 태그를 주로 해둠
+    
+    semantic Versioning
+        major.minor.fix
+        major : 어떤 특정 기능 추가, 전체적 업데이트
+        minor : 커다란 기능 중에서 조금의 기능들 업데이트/개선
+        fix : 기존 존재 기능에서 오류 수정, 성능 좋은 개선
+
+    git tag tag_name hash_code(특정 commit에서)
+    git tag tag_name (현재 commit위치)
+    git tag tag_name -am message : release 정보 적을 수 있음
+    git tag : 모든 tag들 볼 수 있음
+    git tag -l "v1.*" : version 1인 모든 tag확인 가능
+    git tag -d : tag 삭제
+
+git checkout
+    git checkout tag, hash_code, ....
+    git checkout -b branch_name tag_name
+        새로운 브랜치 생성
+    git push origin --tags
+        all the tags sync
+    git push origin tag_name
+        specific tag sync
+
+branch
+    master branch default
+    별도로 branch를 만들지 않으면 계속 한 줄기에서 commit
+    주로 검증된 내용만 master branch에 둠
+    
+    기능별로, 리팩토링별로, 버그픽스 별로 브랜치 만들어나가면 좋음
+    병렬적으로 업무 진행 가능, 따로 개발을 하다가 제품에 포함될 준비 된다면
+    master branch에 merge
+
+    내가 쓰는 branch의 commit들 다 합쳐서 깔끔하게 하나의 commit master에 붙이자!
+
+git branch
+    현재 repository의 local branch들 확인
+git branch --all
+    현재 repository의 모든 branch확인
+
+git branch new-branch
+    새로운 포인터가 어떤 commit을 가르키는 것 뿐
+
+git switch new-branch
+    branch 이동
+
+git switch -C new-branch
+    branch 새로 만들고 이동
+
+git checkout(git switch와 거의 유사)
+    HEAD를 옮김
+    현재 folder내에, 그 버전의 파일들이 존재
+    git checkout -b branch_name
+        branch 만들고 거기로 이동
+
+git branch -d branch_name
+    branch 제거
+
+git branch --move old_name new_name
+
+git log master..test
+git hist master..test
+    master~test 사이의 log랑 hist만 확인
+
+Fast forward merges
+    히스토리에 안남음
+    master가 feature-a를 가르키게 함
+
+git merge
+    master로 가서,(=master에서 feature-a 붙임)
+    git merge feature-a
+    git branch -d feature-a
+
+
+Three-way merges
+    히스토리에 남는 것을 선호하는 경우
+    ff가 불가능한 상황도 있음
+    a-b-c-d
+        |
+        e-f-g
+    이런 경우
+        merge commit이 따로 만들어짐
+
+    git merge --no-ff feature_name
+
+Conflict
+    merge할때 문제가 있어서 충돌이 날 때 발생
+    두가지 branch에서 동일한 파일을 수정한 경우 conflict!
+    파일 열어보면 merge conflict 어디서 발생했는지 보여줌
+
+    manually solution
+        Oh..here!! From master branch!
+            master branch를 남겨두고 싶으면 이 문장을 남겨둠
+        이왕 하는 김에 다른 문장 더 쓰자 하면 절대 안됨!
+    
+
+    using VScode, solution
+        git mergetool
+            셋팅해둠, 버튼 클릭하면 자동으로 변경사항 적용
+        git add.
+        git merge --continue
+    
+    해결한 뒤, git merge --continue
+    
+    p4merge (Merge Tool)
+        필요하면 쓰세요
+
+Rebase
+    three-way-merge를 할수 밖에 없는 상황일때, fast-forward 하려면?
+        a-b-c-d <=master
+            |
+            e-f-g <=feature A
+        master의 최신 버전으로 feature A를 rebase
+        a-b-c-d <=master
+              |
+              e-f-g <=feature A
+        
+        만약, 다른 개발자와 함께 feature A에서 협업하고 있다면, 위험할 수 있음
+        포인터의 정보를 변경하게 되면 기존의 commit을 유지하는 게 아니라
+        새로운 커밋을 만들게 됨(실제로는 다른 commit을 새로 만드는 것)
+        내가 서버에 push한 commit은 다른 개발자가 가지고 있는 commit과 달라버릴 수 있음
+        merge conflict 발생 가능성 있음
+        
+        업로드된 히스토리는 절대 리베이스 하면 안됨
+        서버에 업데이트 되지 않는, 나의 로컬에 있는 커밋에 한해서는 리베이스 자유롭게
+
+    git checkout feature-b
+    git rebase master[feature-b에서 master를 rebase]
+
+    여러 브랜치들 사이에서 rebase
+
+Stash
+    git repository에 올리지 않고도 작업하는 내용을 잠시 넣어둘 수 있음
+    bug처리 각각의 시도, 급히 다른 브랜치 테스트 해볼 때
+    working directory의 파일들을
+    commit하기 보다는, stash stack에 잠시 넣어두는 것
+
+
+    git stash push -m "first try"
+    git stash push -m "first try" --keep-index
+        working directory에 있는건 stash로 올리는데
+        staging area는 그대로 유지하고 싶을 때
+    git stash push -m "first try" -u
+        working directory의 untracked files stash에 포함
+        원래는 tracking file만
+    git stash list
+        view all the stashes
+    git stash show stash_id
+        바뀐 내용 볼 수 있음
+    git stash apply [stash_id]
+        다시 내 워킹 디렉토리로 가져옴
+        without stash_id stash에서 맨 위에 있는거 가져옴
+    git stash drop stash_id
+        stash_id drop in stash_list
+    git stash clear
+        stash list clear
+    git stash pop
+        꺼내면서 삭제
+    git stash branch branch_name
+        새로운 branch가 만들어지면서 파일들의 내용이 적용이 되며
+        
+    git restore .
+
+커밋 수정 > 서버에 올라오지 않은 경우에 수정!!! 주의하기
+    history를 다시 작성하는 것은 새로운 commit을 만드는 것과 동일,
+    server에 push이미 되었는지 따진 다음에 신중하게 사용해야함
+
+    WIP = Working In Progress
+
+    in Working Directory,file 초기화(discard change)
+        git restore file_name
+
+    in Staging Area, to Working Directory
+        git restore --staged file_name
+    
+    git reset HEAD .
+        버전에 맞게 초기화를 해달라
+    
+    git restore --source=(hash_code/HEAD) payment-ui.txt
+    git restore --source=(HEAD~2) payment-ui.txt
+        payment-ui.txt를 HEAD~2 version으로 돌려놓겠다
+
+    git commit --amend
+        현재 브랜치의 선두를 커밋에 덮어씀
+    
+    git reset
+        특정한 커밋으로 모든것을 초기화
+        (commit이 history에서 사라짐)
+        커밋의 변경 내용들은 working directory로 이동(default : --mixed)
+                            staging area로 이동(--soft)
+                            완전히 삭제(--hard)
+        
+실수로 git reset --hard로 모든 commit을 지워버린 경우
+    git reflog
+        log가 다 기록되어있음, 지금까지 실행했던 명령어들과 HEAD 확인 가능
+        그 이후, git reset --hard hash_code
+        commit이 checkpoint 느낌, commit이 되어야 돌아갈 수 있음
+        commit 안했을 때 돌아가려면?
+            Local history extension(vs code)
+
+commit 변경사항 취소, history에 남김
+    이미 서버에 올려져 있는 경우라면, revert
+    commit을 새로 만들어서, 변경사항을 돌려놓으니까 안전
+    git revert hash_code/head
+    
+Interactive Rebasing
+    이전 커밋 수정, 새로 포인터가 만들어지는 것
+    새로운 커밋이 된 것, 새로운 해쉬코드 생성
+    서버에 업로드 된 push된 히스토리는 피하기
+    전체적인 history update됨
+    이전 해쉬코드부터 시작
+    git rebase -i hash_code
+        지정한 hash_code 이후 모든 hash_code Rebasing
+        여기 들어가서 각각 수정
+        rebase하는 file을 뒤에서 수정했을 때 conflict 발생
+            manually하게 처리
+        rebase하는 갯수만큼 (rebase 1/4 이렇게 표시됨)
+        하나씩 다 처리한 후, git rebase --continue
+
+
+github
+    PC->server Git repository upload
+    다른 pc에서도 접근 가능
+    분산형 시스템, 각각의 개발자들이 히스토리를 가지고 있음으로써 공유,복원, 오프라인에서도 작업 가능
+
+fork
+    기존의 repository에 바로 commit하는게 아니라, 나의 repository에 가져옴
+    pull request해서 오픈 소스 프로젝트에 제출
+
+git clone URL(server git repository 복사)
+git remote -v
+    git remote add name URL
+    현재 clone하고 있는 url들
+git remote show name
+    정보 확인
+
+서버에 올리려면?
+    똑같이 git add, git commit한 이후에
+    git push
+
+push를 간편하게? SSH key 등록하기
+
+server에서 변동사항 생겼으면?
+    Conflict
+    git push -f
+        서버에 있는 내용 무시하고 local로 바꿔줌
+    git fetch/pull -> sync with server
+        이후 git rebase한 뒤 push
+        
+이미 존재하는 프로젝트를 깃허브에 추가
+    repository 생성
+    git remote add origin URL
+    git push
+
+git fetch/pull
+    fetch는 history update, head는 유지
+    pull도 history update, local에 있는 내용을 함께 merge
+    git fetch origin master -> origin의 master branch만 가져오도록 설정
+    
+    pull
+        merge가 기본적으로 발생됨
+        git pull --rebase
+            나의 기존 local에서 commit되었던 애만 rebase
+            이 commit만 다시 새로운 commit
+            서버에서 받아온 커밋은 그대로 유지 
+    
